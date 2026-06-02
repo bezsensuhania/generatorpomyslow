@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>inspo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111;
+    --border: #222;
+    --border-mid: #2e2e2e;
+    --text: #d8d8d0;
+    --muted: #555;
+    --hint: #333;
+    --accent: #c8c0a8;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ── layout ── */
+  .page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header {
+    margin-bottom: 48px;
+  }
+
+  header h1 {
+    font-family: var(--mono);
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: .2em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* ── sections ── */
+  .section { margin-bottom: 36px; }
+
+  .label {
+    font-size: 10px;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* ── subreddit pills ── */
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid var(--border-mid);
+    border-radius: 2px;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11px;
+    transition: border-color .15s, color .15s;
+    user-select: none;
+  }
+
+  .pill:hover { border-color: #444; color: var(--accent); }
+
+  .pill.on {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .pill .desc {
+    font-size: 10px;
+    color: var(--hint);
+    font-style: italic;
+  }
+
+  .pill.on .desc { color: var(--muted); }
+
+  .pill .x {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1;
+    margin-left: 2px;
+  }
+
+  /* ── add custom ── */
+  .add-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .add-row input {
+    flex: 1;
+    background: transparent;
+    border: 1px solid var(--border-mid);
+    border-radius: 2px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 7px 12px;
+    outline: none;
+    transition: border-color .15s;
+  }
+
+  .add-row input::placeholder { color: var(--hint); }
+  .add-row input:focus { border-color: #444; }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border-mid);
+    border-radius: 2px;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: border-color .15s, color .15s;
+    white-space: nowrap;
+  }
+
+  .btn-ghost:hover { border-color: #444; color: var(--accent); }
+
+  /* ── divider ── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ── mode toggle ── */
+  .mode-toggle {
+    display: inline-flex;
+    border: 1px solid var(--border-mid);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 28px;
+  }
+
+  .mode-btn {
+    padding: 5px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    letter-spacing: .08em;
+    transition: background .15s, color .15s;
+    user-select: none;
+  }
+
+  .mode-btn:first-child { border-right: 1px solid var(--border-mid); }
+  .mode-btn.on { background: var(--surface); color: var(--accent); }
+  .mode-btn:hover:not(.on) { color: var(--text); }
+
+  /* ── sliders ── */
+  .slider-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 100px;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+  }
+
+  .slider-end {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .slider-end.right { text-align: right; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2px;
+    background: var(--border-mid);
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .15s;
+  }
+
+  input[type=range]:hover::-webkit-slider-thumb { background: #fff; }
+
+  /* ── generate button ── */
+  .btn-primary {
+    width: 100%;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: .1em;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+    margin-top: 4px;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  /* ── results ── */
+  #step-results { display: none; }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 28px;
+  }
+
+  .result-header .vibes {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+
+  /* posts */
+  .post {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+  }
+
+  .post-sub {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: .1em;
+    margin-bottom: 8px;
+  }
+
+  .post-title {
+    font-family: var(--sans);
+    font-weight: 300;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .post-body {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+
+  .comment {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .comment::before {
+    content: '↳';
+    color: var(--hint);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .comment-text {
+    font-size: 11px;
+    color: #444;
+    line-height: 1.55;
+  }
+
+  /* palette */
+  .palette {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+    height: 40px;
+  }
+
+  .swatch {
+    flex: 1;
+    border-radius: 2px;
+    position: relative;
+    cursor: default;
+  }
+
+  .swatch-hex {
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity .2s;
+  }
+
+  .swatch:hover .swatch-hex { opacity: 1; }
+
+  /* aesthetics */
+  .aesthetics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .aesthetic-card {
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 14px 16px;
+  }
+
+  .aesthetic-name {
+    font-size: 12px;
+    color: var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: .04em;
+  }
+
+  .aesthetic-desc {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.55;
+    font-style: italic;
+  }
+
+  /* keywords */
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 16px;
+  }
+
+  .kw {
+    font-size: 10px;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 3px 9px;
+    letter-spacing: .06em;
+  }
+
+  /* bottom actions */
+  .actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .actions .btn-ghost { flex: 1; text-align: center; }
+  .actions .btn-primary { margin-top: 0; flex: 2; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <h1>inspo — reddit moodboard generator</h1>
+  </header>
+
+  <!-- STEP 1: SELECT -->
+  <div id="step-select">
+
+    <div class="section">
+      <div class="label">subreddits</div>
+      <div class="pills" id="pills-wrap"></div>
+      <div class="add-row">
+        <input type="text" id="custom-input" placeholder="add your own, e.g. analog" />
+        <button class="btn-ghost" onclick="addCustom()">+ add</button>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <div class="label">color mode</div>
+      <div class="mode-toggle">
+        <div class="mode-btn on" id="btn-rgb" onclick="setMode('rgb')">RGB</div>
+        <div class="mode-btn" id="btn-cmyk" onclick="setMode('cmyk')">CMYK</div>
+      </div>
+
+      <div class="label">vibe</div>
+
+      <div class="slider-row">
+        <span class="slider-end">dark</span>
+        <input type="range" min="0" max="10" value="3" step="1" id="s-mood">
+        <span class="slider-end right">optimistic</span>
+      </div>
+
+      <div class="slider-row">
+        <span class="slider-end">chaos</span>
+        <input type="range" min="0" max="10" value="5" step="1" id="s-comp">
+        <span class="slider-end right">minimalism</span>
+      </div>
+
+      <div class="slider-row">
+        <span class="slider-end">traditional</span>
+        <input type="range" min="0" max="10" value="3" step="1" id="s-time">
+        <span class="slider-end right">contemporary</span>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="generate()">generate inspiration</button>
+
+  </div>
+
+  <!-- STEP 2: RESULTS -->
+  <div id="step-results">
+
+    <div class="result-header">
+      <div class="label" style="margin:0">results</div>
+      <div class="vibes" id="vibe-readout"></div>
+    </div>
+
+    <div class="section">
+      <div class="label">posts</div>
+      <div id="posts-out"></div>
+    </div>
+
+    <hr>
+
+    <div class="section">
+      <div class="label">palette</div>
+      <div class="palette" id="palette-out"></div>
+    </div>
+
+    <div class="section">
+      <div class="label">visual style</div>
+      <div class="aesthetics-grid" id="aesthetics-out"></div>
+    </div>
+
+    <div class="section">
+      <div class="label">keywords</div>
+      <div class="keywords" id="keywords-out"></div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-ghost" onclick="back()">← back</button>
+      <button class="btn-primary" onclick="generate()">shuffle again</button>
+    </div>
+
+  </div>
+
+</div>
+
+<script type="module">
+import { MOCK_REDDIT, generatePalette, getAesthetics, getPosts } from './mockReddit.js';
+
+let selected = new Set(['r/analog', 'r/Ceramics', 'r/collage', 'r/liminalspaces']);
+let colorMode = 'rgb';
+let customSubs = [];
+
+// ── init pills ──
+function renderPills() {
+  const wrap = document.getElementById('pills-wrap');
+  wrap.innerHTML = '';
+
+  Object.entries(MOCK_REDDIT).forEach(([name, data]) => {
+    wrap.appendChild(makePill(name, data.desc, false));
+  });
+
+  customSubs.forEach(name => {
+    wrap.appendChild(makePill(name, 'custom', true));
+  });
+}
+
+function makePill(name, desc, isCustom) {
+  const p = document.createElement('span');
+  p.className = 'pill' + (selected.has(name) ? ' on' : '');
+  p.dataset.name = name;
+
+  const nameSpan = document.createElement('span');
+  nameSpan.textContent = name;
+
+  const descSpan = document.createElement('span');
+  descSpan.className = 'desc';
+  descSpan.textContent = desc;
+
+  p.appendChild(nameSpan);
+  p.appendChild(descSpan);
+
+  if (isCustom) {
+    const x = document.createElement('span');
+    x.className = 'x';
+    x.textContent = '×';
+    x.onclick = (e) => { e.stopPropagation(); removeCustom(name); };
+    p.appendChild(x);
+  }
+
+  p.onclick = () => {
+    if (selected.has(name)) selected.delete(name);
+    else selected.add(name);
+    p.classList.toggle('on');
+  };
+
+  return p;
+}
+
+window.addCustom = function() {
+  const inp = document.getElementById('custom-input');
+  let val = inp.value.trim();
+  if (!val) return;
+  if (!val.startsWith('r/')) val = 'r/' + val;
+  if (customSubs.includes(val)) { inp.value = ''; return; }
+  customSubs.push(val);
+  selected.add(val);
+
+  // inject minimal mock data for custom subs
+  if (!MOCK_REDDIT[val]) {
+    MOCK_REDDIT[val] = {
+      desc: 'custom',
+      tags: [],
+      posts: [{
+        title: 'Post from ' + val,
+        body: 'Connect to the real Reddit API to pull actual posts from this subreddit.',
+        comments: ['Real content would appear here.', 'One API call away.']
+      }]
+    };
+  }
+
+  inp.value = '';
+  renderPills();
+};
+
+function removeCustom(name) {
+  customSubs = customSubs.filter(s => s !== name);
+  selected.delete(name);
+  delete MOCK_REDDIT[name];
+  renderPills();
+}
+
+window.setMode = function(m) {
+  colorMode = m;
+  document.getElementById('btn-rgb').classList.toggle('on', m === 'rgb');
+  document.getElementById('btn-cmyk').classList.toggle('on', m === 'cmyk');
+};
+
+// ── generate ──
+window.generate = function() {
+  const mood = parseInt(document.getElementById('s-mood').value);
+  const comp = parseInt(document.getElementById('s-comp').value);
+  const time = parseInt(document.getElementById('s-time').value);
+
+  const pool = [...selected];
+  if (pool.length === 0) { alert('Select at least one subreddit.'); return; }
+
+  // posts
+  const posts = getPosts(pool, mood, comp, time, 3);
+  let postsHTML = '';
+  posts.forEach(p => {
+    postsHTML += `<div class="post">
+      <div class="post-sub">${p.sub}</div>
+      <div class="post-title">${p.title}</div>
+      ${p.body ? `<div class="post-body">${p.body}</div>` : ''}
+      ${p.comments.map(c => `<div class="comment"><span class="comment-text">${c}</span></div>`).join('')}
+    </div>`;
+  });
+  document.getElementById('posts-out').innerHTML = postsHTML;
+
+  // palette
+  const palette = generatePalette(mood, comp, time, colorMode);
+  let paletteHTML = '';
+  palette.forEach(hex => {
+    const r = parseInt(hex.slice(1,3),16);
+    const g = parseInt(hex.slice(3,5),16);
+    const b = parseInt(hex.slice(5,7),16);
+    const lum = r*0.299 + g*0.587 + b*0.114;
+    const textCol = lum > 128 ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.55)';
+    paletteHTML += `<div class="swatch" style="background:${hex}">
+      <span class="swatch-hex" style="color:${textCol}">${hex}</span>
+    </div>`;
+  });
+  document.getElementById('palette-out').innerHTML = paletteHTML;
+
+  // aesthetics
+  const aesthetics = getAesthetics(mood, comp, time, 2);
+  let aestheticsHTML = '';
+  aesthetics.forEach(a => {
+    aestheticsHTML += `<div class="aesthetic-card">
+      <div class="aesthetic-name">${a.name}</div>
+      <div class="aesthetic-desc">${a.desc}</div>
+    </div>`;
+  });
+  document.getElementById('aesthetics-out').innerHTML = aestheticsHTML;
+
+  // keywords from aesthetics + vibe labels
+  const moodWord = mood < 4 ? 'dark' : mood > 7 ? 'optimistic' : 'ambiguous';
+  const compWord = comp < 4 ? 'chaotic' : comp > 7 ? 'minimal' : 'balanced';
+  const timeWord = time < 4 ? 'traditional' : time > 7 ? 'contemporary' : 'timeless';
+
+  const extraKw = [];
+  aesthetics.forEach(a => {
+    const words = a.name.toLowerCase().split(/\s+/);
+    extraKw.push(...words);
+  });
+
+  const allKw = [moodWord, compWord, timeWord, ...extraKw,
+    colorMode === 'cmyk' ? 'print-ready' : 'screen',
+    posts[0]?.sub.replace('r/','') ?? ''].filter(Boolean);
+
+  const unique = [...new Set(allKw)];
+  document.getElementById('keywords-out').innerHTML = unique.map(k => `<span class="kw">${k}</span>`).join('');
+
+  // vibe readout
+  document.getElementById('vibe-readout').textContent =
+    `mood ${mood}/10 · composition ${comp}/10 · time ${time}/10 · ${colorMode.toUpperCase()}`;
+
+  // switch views
+  document.getElementById('step-select').style.display = 'none';
+  document.getElementById('step-results').style.display = 'block';
+};
+
+window.back = function() {
+  document.getElementById('step-select').style.display = 'block';
+  document.getElementById('step-results').style.display = 'none';
+};
+
+renderPills();
+</script>
+</body>
+</html>
