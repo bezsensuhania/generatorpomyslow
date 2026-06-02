@@ -7,386 +7,322 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Sans:wght@300;400&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #0a0a0a;
-    --surface: #111;
-    --border: #222;
-    --border-mid: #2e2e2e;
-    --text: #d8d8d0;
-    --muted: #555;
-    --hint: #333;
-    --accent: #c8c0a8;
-    --mono: 'IBM Plex Mono', monospace;
-    --sans: 'IBM Plex Sans', sans-serif;
-  }
+:root {
+  --bg: #0a0a0a;
+  --surface: #111;
+  --border: #1e1e1e;
+  --border-mid: #2e2e2e;
+  --text: #d8d8d0;
+  --muted: #555;
+  --hint: #2a2a2a;
+  --accent: #c8c0a8;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
 
-  html, body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 13px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
 
-  a { color: inherit; text-decoration: none; }
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
 
-  /* ── layout ── */
-  .page {
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 48px 24px 80px;
-  }
+header {
+  margin-bottom: 40px;
+}
 
-  header {
-    margin-bottom: 48px;
-  }
+header h1 {
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: .2em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
 
-  header h1 {
-    font-family: var(--mono);
-    font-weight: 300;
-    font-size: 11px;
-    letter-spacing: .2em;
-    color: var(--muted);
-    text-transform: uppercase;
-  }
+.label {
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
 
-  /* ── sections ── */
-  .section { margin-bottom: 36px; }
+hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 
-  .label {
-    font-size: 10px;
-    letter-spacing: .15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 14px;
-  }
+/* ── STEP 1 two-column layout ── */
+.select-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
 
-  /* ── subreddit pills ── */
-  .pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
+@media (max-width: 700px) {
+  .select-grid { grid-template-columns: 1fr; gap: 32px; }
+}
 
-  .pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
-    border: 1px solid var(--border-mid);
-    border-radius: 2px;
-    color: var(--muted);
-    cursor: pointer;
-    font-family: var(--mono);
-    font-size: 11px;
-    transition: border-color .15s, color .15s;
-    user-select: none;
-  }
+/* ── pills ── */
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 
-  .pill:hover { border-color: #444; color: var(--accent); }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border: 1px solid var(--border-mid);
+  border-radius: 2px;
+  color: var(--muted);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 11px;
+  transition: border-color .15s, color .15s;
+  user-select: none;
+}
 
-  .pill.on {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
+.pill:hover { border-color: #444; color: var(--accent); }
+.pill.on { border-color: var(--accent); color: var(--accent); }
+.pill .desc { font-size: 10px; color: var(--hint); font-style: italic; }
+.pill.on .desc { color: #3a3a3a; }
+.pill .x { font-size: 14px; color: #3a3a3a; line-height: 1; }
 
-  .pill .desc {
-    font-size: 10px;
-    color: var(--hint);
-    font-style: italic;
-  }
+.add-row { display: flex; gap: 8px; margin-top: 4px; }
 
-  .pill.on .desc { color: var(--muted); }
+.add-row input {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  border-radius: 2px;
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 7px 12px;
+  outline: none;
+  transition: border-color .15s;
+}
 
-  .pill .x {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1;
-    margin-left: 2px;
-  }
+.add-row input::placeholder { color: #2e2e2e; }
+.add-row input:focus { border-color: #444; }
 
-  /* ── add custom ── */
-  .add-row {
-    display: flex;
-    gap: 8px;
-    margin-top: 4px;
-  }
+/* ── mode toggle ── */
+.mode-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border-mid);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
 
-  .add-row input {
-    flex: 1;
-    background: transparent;
-    border: 1px solid var(--border-mid);
-    border-radius: 2px;
-    color: var(--text);
-    font-family: var(--mono);
-    font-size: 12px;
-    padding: 7px 12px;
-    outline: none;
-    transition: border-color .15s;
-  }
+.mode-btn {
+  padding: 5px 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  cursor: pointer;
+  letter-spacing: .08em;
+  transition: background .15s, color .15s;
+  user-select: none;
+}
 
-  .add-row input::placeholder { color: var(--hint); }
-  .add-row input:focus { border-color: #444; }
+.mode-btn:first-child { border-right: 1px solid var(--border-mid); }
+.mode-btn.on { background: var(--surface); color: var(--accent); }
+.mode-btn:hover:not(.on) { color: var(--text); }
 
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border-mid);
-    border-radius: 2px;
-    color: var(--muted);
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 7px 14px;
-    cursor: pointer;
-    transition: border-color .15s, color .15s;
-    white-space: nowrap;
-  }
+/* ── sliders ── */
+.slider-block { margin-bottom: 20px; }
+.slider-label-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+.slider-end { font-size: 10px; color: var(--muted); }
 
-  .btn-ghost:hover { border-color: #444; color: var(--accent); }
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 1px;
+  background: var(--border-mid);
+  outline: none;
+  cursor: pointer;
+}
 
-  /* ── divider ── */
-  hr {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 32px 0;
-  }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 11px;
+  height: 11px;
+  background: var(--accent);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background .15s;
+}
 
-  /* ── mode toggle ── */
-  .mode-toggle {
-    display: inline-flex;
-    border: 1px solid var(--border-mid);
-    border-radius: 2px;
-    overflow: hidden;
-    margin-bottom: 28px;
-  }
+input[type=range]:hover::-webkit-slider-thumb { background: #fff; }
 
-  .mode-btn {
-    padding: 5px 16px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    cursor: pointer;
-    letter-spacing: .08em;
-    transition: background .15s, color .15s;
-    user-select: none;
-  }
+/* ── buttons ── */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border-mid);
+  border-radius: 2px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+  white-space: nowrap;
+}
 
-  .mode-btn:first-child { border-right: 1px solid var(--border-mid); }
-  .mode-btn.on { background: var(--surface); color: var(--accent); }
-  .mode-btn:hover:not(.on) { color: var(--text); }
+.btn-ghost:hover { border-color: #444; color: var(--accent); }
 
-  /* ── sliders ── */
-  .slider-row {
-    display: grid;
-    grid-template-columns: 100px 1fr 100px;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 18px;
-  }
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 2px;
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  margin-top: 8px;
+}
 
-  .slider-end {
-    font-size: 11px;
-    color: var(--muted);
-  }
+.btn-primary:hover { background: var(--accent); color: var(--bg); }
 
-  .slider-end.right { text-align: right; }
+/* ── STEP 2 two-column layout ── */
+#step-results { display: none; }
 
-  input[type=range] {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    height: 2px;
-    background: var(--border-mid);
-    outline: none;
-    cursor: pointer;
-  }
+.result-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 32px;
+}
 
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background .15s;
-  }
+.result-header .vibes { font-size: 10px; color: var(--muted); letter-spacing: .06em; }
 
-  input[type=range]:hover::-webkit-slider-thumb { background: #fff; }
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
 
-  /* ── generate button ── */
-  .btn-primary {
-    width: 100%;
-    padding: 12px;
-    background: transparent;
-    border: 1px solid var(--accent);
-    border-radius: 2px;
-    color: var(--accent);
-    font-family: var(--mono);
-    font-size: 12px;
-    letter-spacing: .1em;
-    cursor: pointer;
-    transition: background .15s, color .15s;
-    margin-top: 4px;
-  }
+@media (max-width: 700px) {
+  .results-grid { grid-template-columns: 1fr; gap: 32px; }
+}
 
-  .btn-primary:hover {
-    background: var(--accent);
-    color: var(--bg);
-  }
+/* posts */
+.post {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 16px 18px;
+  margin-bottom: 8px;
+}
 
-  /* ── results ── */
-  #step-results { display: none; }
+.post-sub { font-size: 10px; color: var(--muted); letter-spacing: .1em; margin-bottom: 6px; }
 
-  .result-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 28px;
-  }
+.post-title {
+  font-family: var(--sans);
+  font-weight: 300;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.5;
+  margin-bottom: 7px;
+}
 
-  .result-header .vibes {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: .08em;
-  }
+.post-body {
+  font-size: 12px;
+  color: #3e3e3a;
+  line-height: 1.65;
+  margin-bottom: 10px;
+  font-style: italic;
+}
 
-  /* posts */
-  .post {
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 18px 20px;
-    margin-bottom: 10px;
-  }
+.comment { display: flex; gap: 8px; margin-bottom: 5px; }
+.comment::before { content: '↳'; color: var(--hint); flex-shrink: 0; margin-top: 1px; }
+.comment-text { font-size: 11px; color: #484844; line-height: 1.5; }
 
-  .post-sub {
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: .1em;
-    margin-bottom: 8px;
-  }
+/* palette */
+.palette { display: flex; gap: 5px; height: 44px; margin-bottom: 6px; }
 
-  .post-title {
-    font-family: var(--sans);
-    font-weight: 300;
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.5;
-    margin-bottom: 8px;
-  }
+.swatch {
+  flex: 1;
+  border-radius: 2px;
+  position: relative;
+  cursor: default;
+}
 
-  .post-body {
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.65;
-    margin-bottom: 12px;
-    font-style: italic;
-  }
+.swatch-hex {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  letter-spacing: .03em;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity .2s;
+  pointer-events: none;
+}
 
-  .comment {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
+.swatch:hover .swatch-hex { opacity: 1; }
 
-  .comment::before {
-    content: '↳';
-    color: var(--hint);
-    flex-shrink: 0;
-    margin-top: 1px;
-  }
+.palette-roles {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+}
 
-  .comment-text {
-    font-size: 11px;
-    color: #444;
-    line-height: 1.55;
-  }
+.palette-role {
+  flex: 1;
+  font-size: 9px;
+  color: #2e2e2e;
+  text-align: center;
+  letter-spacing: .04em;
+}
 
-  /* palette */
-  .palette {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 8px;
-    height: 40px;
-  }
+/* aesthetics */
+.aesthetic-card {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+}
 
-  .swatch {
-    flex: 1;
-    border-radius: 2px;
-    position: relative;
-    cursor: default;
-  }
+.aesthetic-name { font-size: 12px; color: var(--accent); margin-bottom: 5px; letter-spacing: .04em; }
+.aesthetic-desc { font-size: 11px; color: #3e3e3a; line-height: 1.55; font-style: italic; }
 
-  .swatch-hex {
-    position: absolute;
-    bottom: 4px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 9px;
-    letter-spacing: .04em;
-    white-space: nowrap;
-    opacity: 0;
-    transition: opacity .2s;
-  }
+/* keywords */
+.keywords { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+.kw {
+  font-size: 10px;
+  color: #3a3a38;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 3px 9px;
+  letter-spacing: .06em;
+}
 
-  .swatch:hover .swatch-hex { opacity: 1; }
+.actions { display: flex; gap: 8px; margin-top: 32px; }
+.actions .btn-ghost { flex: 1; text-align: center; }
+.actions .btn-primary { margin-top: 0; flex: 2; }
 
-  /* aesthetics */
-  .aesthetics-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 24px;
-  }
-
-  .aesthetic-card {
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 14px 16px;
-  }
-
-  .aesthetic-name {
-    font-size: 12px;
-    color: var(--accent);
-    margin-bottom: 6px;
-    letter-spacing: .04em;
-  }
-
-  .aesthetic-desc {
-    font-size: 11px;
-    color: var(--muted);
-    line-height: 1.55;
-    font-style: italic;
-  }
-
-  /* keywords */
-  .keywords {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 16px;
-  }
-
-  .kw {
-    font-size: 10px;
-    color: var(--muted);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 3px 9px;
-    letter-spacing: .06em;
-  }
-
-  /* bottom actions */
-  .actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 32px;
-  }
-
-  .actions .btn-ghost { flex: 1; text-align: center; }
-  .actions .btn-primary { margin-top: 0; flex: 2; }
+.section-title {
+  font-size: 10px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
 </style>
 </head>
 <body>
@@ -396,53 +332,59 @@
     <h1>inspo — reddit moodboard generator</h1>
   </header>
 
-  <!-- STEP 1: SELECT -->
+  <!-- STEP 1 -->
   <div id="step-select">
+    <div class="select-grid">
 
-    <div class="section">
-      <div class="label">subreddits</div>
-      <div class="pills" id="pills-wrap"></div>
-      <div class="add-row">
-        <input type="text" id="custom-input" placeholder="add your own, e.g. analog" />
-        <button class="btn-ghost" onclick="addCustom()">+ add</button>
+      <div>
+        <div class="label">subreddits</div>
+        <div class="pills" id="pills-wrap"></div>
+        <div class="add-row">
+          <input type="text" id="custom-input" placeholder="add your own, e.g. analog" />
+          <button class="btn-ghost" onclick="addCustom()">+ add</button>
+        </div>
       </div>
+
+      <div>
+        <div class="label">color mode</div>
+        <div class="mode-toggle">
+          <div class="mode-btn on" id="btn-rgb" onclick="setMode('rgb')">RGB</div>
+          <div class="mode-btn" id="btn-cmyk" onclick="setMode('cmyk')">CMYK</div>
+        </div>
+
+        <div class="label">vibe</div>
+
+        <div class="slider-block">
+          <div class="slider-label-row">
+            <span class="slider-end">dark</span>
+            <span class="slider-end">optimistic</span>
+          </div>
+          <input type="range" min="0" max="10" value="3" step="1" id="s-mood">
+        </div>
+
+        <div class="slider-block">
+          <div class="slider-label-row">
+            <span class="slider-end">chaos</span>
+            <span class="slider-end">minimalism</span>
+          </div>
+          <input type="range" min="0" max="10" value="5" step="1" id="s-comp">
+        </div>
+
+        <div class="slider-block">
+          <div class="slider-label-row">
+            <span class="slider-end">traditional</span>
+            <span class="slider-end">contemporary</span>
+          </div>
+          <input type="range" min="0" max="10" value="3" step="1" id="s-time">
+        </div>
+
+        <button class="btn-primary" onclick="generate()">generate inspiration</button>
+      </div>
+
     </div>
-
-    <hr>
-
-    <div class="section">
-      <div class="label">color mode</div>
-      <div class="mode-toggle">
-        <div class="mode-btn on" id="btn-rgb" onclick="setMode('rgb')">RGB</div>
-        <div class="mode-btn" id="btn-cmyk" onclick="setMode('cmyk')">CMYK</div>
-      </div>
-
-      <div class="label">vibe</div>
-
-      <div class="slider-row">
-        <span class="slider-end">dark</span>
-        <input type="range" min="0" max="10" value="3" step="1" id="s-mood">
-        <span class="slider-end right">optimistic</span>
-      </div>
-
-      <div class="slider-row">
-        <span class="slider-end">chaos</span>
-        <input type="range" min="0" max="10" value="5" step="1" id="s-comp">
-        <span class="slider-end right">minimalism</span>
-      </div>
-
-      <div class="slider-row">
-        <span class="slider-end">traditional</span>
-        <input type="range" min="0" max="10" value="3" step="1" id="s-time">
-        <span class="slider-end right">contemporary</span>
-      </div>
-    </div>
-
-    <button class="btn-primary" onclick="generate()">generate inspiration</button>
-
   </div>
 
-  <!-- STEP 2: RESULTS -->
+  <!-- STEP 2 -->
   <div id="step-results">
 
     <div class="result-header">
@@ -450,33 +392,31 @@
       <div class="vibes" id="vibe-readout"></div>
     </div>
 
-    <div class="section">
-      <div class="label">posts</div>
-      <div id="posts-out"></div>
+    <div class="results-grid">
+
+      <div>
+        <div class="section-title">posts</div>
+        <div id="posts-out"></div>
+      </div>
+
+      <div>
+        <div class="section-title">palette</div>
+        <div class="palette" id="palette-out"></div>
+        <div class="palette-roles" id="palette-roles"></div>
+
+        <div class="section-title">visual style</div>
+        <div id="aesthetics-out"></div>
+
+        <div class="section-title">keywords</div>
+        <div class="keywords" id="keywords-out"></div>
+
+        <div class="actions">
+          <button class="btn-ghost" onclick="back()">← back</button>
+          <button class="btn-primary" onclick="generate()">shuffle again</button>
+        </div>
+      </div>
+
     </div>
-
-    <hr>
-
-    <div class="section">
-      <div class="label">palette</div>
-      <div class="palette" id="palette-out"></div>
-    </div>
-
-    <div class="section">
-      <div class="label">visual style</div>
-      <div class="aesthetics-grid" id="aesthetics-out"></div>
-    </div>
-
-    <div class="section">
-      <div class="label">keywords</div>
-      <div class="keywords" id="keywords-out"></div>
-    </div>
-
-    <div class="actions">
-      <button class="btn-ghost" onclick="back()">← back</button>
-      <button class="btn-primary" onclick="generate()">shuffle again</button>
-    </div>
-
   </div>
 
 </div>
@@ -488,18 +428,13 @@ let selected = new Set(['r/analog', 'r/Ceramics', 'r/collage', 'r/liminalspaces'
 let colorMode = 'rgb';
 let customSubs = [];
 
-// ── init pills ──
 function renderPills() {
   const wrap = document.getElementById('pills-wrap');
   wrap.innerHTML = '';
-
   Object.entries(MOCK_REDDIT).forEach(([name, data]) => {
     wrap.appendChild(makePill(name, data.desc, false));
   });
-
-  customSubs.forEach(name => {
-    wrap.appendChild(makePill(name, 'custom', true));
-  });
+  customSubs.forEach(name => wrap.appendChild(makePill(name, 'custom', true)));
 }
 
 function makePill(name, desc, isCustom) {
@@ -509,11 +444,9 @@ function makePill(name, desc, isCustom) {
 
   const nameSpan = document.createElement('span');
   nameSpan.textContent = name;
-
   const descSpan = document.createElement('span');
   descSpan.className = 'desc';
-  descSpan.textContent = desc;
-
+  descSpan.textContent = ' ' + desc;
   p.appendChild(nameSpan);
   p.appendChild(descSpan);
 
@@ -530,7 +463,6 @@ function makePill(name, desc, isCustom) {
     else selected.add(name);
     p.classList.toggle('on');
   };
-
   return p;
 }
 
@@ -542,8 +474,6 @@ window.addCustom = function() {
   if (customSubs.includes(val)) { inp.value = ''; return; }
   customSubs.push(val);
   selected.add(val);
-
-  // inject minimal mock data for custom subs
   if (!MOCK_REDDIT[val]) {
     MOCK_REDDIT[val] = {
       desc: 'custom',
@@ -555,7 +485,6 @@ window.addCustom = function() {
       }]
     };
   }
-
   inp.value = '';
   renderPills();
 };
@@ -573,77 +502,60 @@ window.setMode = function(m) {
   document.getElementById('btn-cmyk').classList.toggle('on', m === 'cmyk');
 };
 
-// ── generate ──
 window.generate = function() {
   const mood = parseInt(document.getElementById('s-mood').value);
   const comp = parseInt(document.getElementById('s-comp').value);
   const time = parseInt(document.getElementById('s-time').value);
-
   const pool = [...selected];
-  if (pool.length === 0) { alert('Select at least one subreddit.'); return; }
+  if (!pool.length) { alert('Select at least one subreddit.'); return; }
 
   // posts
   const posts = getPosts(pool, mood, comp, time, 3);
-  let postsHTML = '';
-  posts.forEach(p => {
-    postsHTML += `<div class="post">
+  document.getElementById('posts-out').innerHTML = posts.map(p => `
+    <div class="post">
       <div class="post-sub">${p.sub}</div>
       <div class="post-title">${p.title}</div>
       ${p.body ? `<div class="post-body">${p.body}</div>` : ''}
       ${p.comments.map(c => `<div class="comment"><span class="comment-text">${c}</span></div>`).join('')}
-    </div>`;
-  });
-  document.getElementById('posts-out').innerHTML = postsHTML;
+    </div>`).join('');
 
   // palette
   const palette = generatePalette(mood, comp, time, colorMode);
-  let paletteHTML = '';
-  palette.forEach(hex => {
+  const roles = ['light', 'mid-light', 'accent', 'mid-dark', 'dark'];
+  document.getElementById('palette-out').innerHTML = palette.map(hex => {
     const r = parseInt(hex.slice(1,3),16);
     const g = parseInt(hex.slice(3,5),16);
     const b = parseInt(hex.slice(5,7),16);
     const lum = r*0.299 + g*0.587 + b*0.114;
-    const textCol = lum > 128 ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.55)';
-    paletteHTML += `<div class="swatch" style="background:${hex}">
-      <span class="swatch-hex" style="color:${textCol}">${hex}</span>
+    const tc = lum > 140 ? 'rgba(0,0,0,0.55)' : 'rgba(255,255,255,0.55)';
+    return `<div class="swatch" style="background:${hex}">
+      <span class="swatch-hex" style="color:${tc}">${hex}</span>
     </div>`;
-  });
-  document.getElementById('palette-out').innerHTML = paletteHTML;
+  }).join('');
+
+  document.getElementById('palette-roles').innerHTML = roles.map(r =>
+    `<div class="palette-role">${r}</div>`).join('');
 
   // aesthetics
   const aesthetics = getAesthetics(mood, comp, time, 2);
-  let aestheticsHTML = '';
-  aesthetics.forEach(a => {
-    aestheticsHTML += `<div class="aesthetic-card">
+  document.getElementById('aesthetics-out').innerHTML = aesthetics.map(a =>
+    `<div class="aesthetic-card">
       <div class="aesthetic-name">${a.name}</div>
       <div class="aesthetic-desc">${a.desc}</div>
-    </div>`;
-  });
-  document.getElementById('aesthetics-out').innerHTML = aestheticsHTML;
+    </div>`).join('');
 
-  // keywords from aesthetics + vibe labels
+  // keywords
   const moodWord = mood < 4 ? 'dark' : mood > 7 ? 'optimistic' : 'ambiguous';
   const compWord = comp < 4 ? 'chaotic' : comp > 7 ? 'minimal' : 'balanced';
   const timeWord = time < 4 ? 'traditional' : time > 7 ? 'contemporary' : 'timeless';
+  const aeKw = aesthetics.flatMap(a => a.name.toLowerCase().split(/\s+/));
+  const allKw = [...new Set([moodWord, compWord, timeWord, colorMode === 'cmyk' ? 'print' : 'screen', ...aeKw])];
+  document.getElementById('keywords-out').innerHTML = allKw.map(k =>
+    `<span class="kw">${k}</span>`).join('');
 
-  const extraKw = [];
-  aesthetics.forEach(a => {
-    const words = a.name.toLowerCase().split(/\s+/);
-    extraKw.push(...words);
-  });
-
-  const allKw = [moodWord, compWord, timeWord, ...extraKw,
-    colorMode === 'cmyk' ? 'print-ready' : 'screen',
-    posts[0]?.sub.replace('r/','') ?? ''].filter(Boolean);
-
-  const unique = [...new Set(allKw)];
-  document.getElementById('keywords-out').innerHTML = unique.map(k => `<span class="kw">${k}</span>`).join('');
-
-  // vibe readout
   document.getElementById('vibe-readout').textContent =
-    `mood ${mood}/10 · composition ${comp}/10 · time ${time}/10 · ${colorMode.toUpperCase()}`;
+    `mood ${mood}/10 · comp ${comp}/10 · time ${time}/10 · ${colorMode.toUpperCase()}`;
 
-  // switch views
   document.getElementById('step-select').style.display = 'none';
   document.getElementById('step-results').style.display = 'block';
 };

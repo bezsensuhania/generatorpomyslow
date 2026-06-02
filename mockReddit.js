@@ -431,94 +431,100 @@ const AESTHETICS = [
   { name: "Acid House Graphics", desc: "Smiley face as icon, repetition, primary colors. Joy engineered into visual form.", mood:[7,10], comp:[2,6], time:[4,8] }
 ];
 
-// Palette generation rules
+// Palette generation
 // mode: 'rgb' or 'cmyk'
-// Returns array of 5 hex colors: [light, midlight, accent, middark, dark]
+// Returns array of 5 hex colors: [light, mid-light, accent, mid-dark, dark]
+// Rules: no pure black/white, no pure gray, complementary hues in different perceptual families
 
 function generatePalette(mood, composition, time, mode) {
-  // Base hue selection driven by mood + time sliders
-  // mood 0-10: dark=low, optimistic=high
-  // time 0-10: traditional=low, contemporary=high
+  const moodN = mood / 10;
+  const timeN = time / 10;
+  const compN = composition / 10;
 
-  const moodNorm = mood / 10;
-  const timeNorm = time / 10;
-  const compNorm = composition / 10;
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  // Hue families: traditional = warm/earth, contemporary = cool/saturated
-  // Dark = desaturated + low lightness, optimistic = saturated + high lightness
-
-  let baseHues, satRange, lightRange;
-
-  if (timeNorm < 0.4) {
-    // traditional: warm earth, ochre, rust, sage, sepia
-    baseHues = [25, 35, 200, 85, 15];
-  } else if (timeNorm > 0.7) {
-    // contemporary: cool, cyan, violet, electric
-    baseHues = [195, 265, 310, 160, 230];
-  } else {
-    // mixed
-    baseHues = [50, 180, 290, 120, 20];
-  }
-
-  // Pick a base hue and build complementary
-  const baseHue = baseHues[Math.floor(Math.random() * baseHues.length)];
-  const compHue = (baseHue + 150 + Math.floor(Math.random() * 60) - 30) % 360;
-  const accentHue = (baseHue + 60 + Math.floor(Math.random() * 40) - 20) % 360;
-
-  // Saturation: dark mood = lower sat, optimistic = higher
-  const satBase = mode === 'cmyk'
-    ? 60 + moodNorm * 30
-    : 30 + moodNorm * 50;
-
-  // Lightness range
-  const lightnessLight = 88 + moodNorm * 8;   // 88–96
-  const lightnessDark = 12 + (1 - moodNorm) * 18; // 12–30 (no pure black)
-
-  // Composition affects saturation variance
-  const satVariance = compNorm < 0.5 ? 20 : 8; // chaotic = more variance
-
-  function hsl(h, s, l) {
+  function hslToHex(h, s, l) {
     h = ((h % 360) + 360) % 360;
-    s = Math.max(0, Math.min(100, s));
-    l = Math.max(8, Math.min(96, l));
-    const hn = h / 360, sn = s / 100, ln = l / 100;
-    const q = ln < 0.5 ? ln * (1 + sn) : ln + sn - ln * sn;
-    const p = 2 * ln - q;
-    const hue2rgb = (p, q, t) => {
-      if (t < 0) t += 1; if (t > 1) t -= 1;
-      if (t < 1/6) return p + (q - p) * 6 * t;
-      if (t < 1/2) return q;
-      if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    s = Math.max(5, Math.min(95, s));
+    l = Math.max(10, Math.min(94, l));
+    const hn = h/360, sn = s/100, ln = l/100;
+    const q = ln < 0.5 ? ln*(1+sn) : ln+sn-ln*sn;
+    const p = 2*ln-q;
+    const h2r = (p,q,t) => {
+      if (t<0) t+=1; if (t>1) t-=1;
+      if (t<1/6) return p+(q-p)*6*t;
+      if (t<1/2) return q;
+      if (t<2/3) return p+(q-p)*(2/3-t)*6;
       return p;
     };
-    const r = Math.round(hue2rgb(p, q, hn + 1/3) * 255);
-    const g = Math.round(hue2rgb(p, q, hn) * 255);
-    const b = Math.round(hue2rgb(p, q, hn - 1/3) * 255);
-    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+    const r = Math.round(h2r(p,q,hn+1/3)*255);
+    const g = Math.round(h2r(p,q,hn)*255);
+    const b = Math.round(h2r(p,q,hn-1/3)*255);
+    return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
   }
 
+  // Perceptual family check — prevents two hues in the same color family
+  function family(h) {
+    h = ((h%360)+360)%360;
+    if (h<30||h>=330) return 'red';
+    if (h<75) return 'orange';
+    if (h<150) return 'green';
+    if (h<210) return 'teal';
+    if (h<270) return 'blue';
+    return 'purple';
+  }
+
+  function differentFamily(h1, h2) { return family(h1) !== family(h2); }
+
+  // CMYK mode: pure 1-2 ink colors only
   if (mode === 'cmyk') {
-    // CMYK-inspired: use 1-2 ink components
-    // Pure cyan ≈ hsl(180,100,50), magenta ≈ hsl(300,100,50), yellow ≈ hsl(60,100,50)
-    // Mix of 2: red=mag+yel, green=cyan+yel, blue=cyan+mag
-    const cmykHues = [180, 300, 60, 0, 120, 240]; // C, M, Y, R(approx), G, B
-    const h1 = cmykHues[Math.floor(Math.random() * cmykHues.length)];
-    const h2 = cmykHues[Math.floor(Math.random() * cmykHues.length)];
+    // C=180, M=300, Y=60, R=0, G=120, B=240
+    const inks = [180, 300, 60, 0, 240]; // exclude green(120) as dominant — too expected
+    let h1 = pick(inks);
+    let h2 = pick(inks.filter(h => differentFamily(h, h1)));
     return [
-      hsl(h1, 15, 92),           // light tint
-      hsl(h1, 45, 72),           // mid tint
-      hsl(h2, 85, 48),           // accent — strong ink color
-      hsl(h1, 60, 35),           // dark shade
-      hsl((h1+h2)/2, 40, 18),    // deep dark (not black)
+      hslToHex(h1, 12, 92),
+      hslToHex(h1, 40, 74),
+      hslToHex(h2, 88, 46),
+      hslToHex(h1, 55, 32),
+      hslToHex(h2, 35, 16),
     ];
   }
 
+  // RGB mode — hue selection by time slider
+  let baseHue;
+  if (timeN < 0.4) {
+    // traditional: warm earth — ochre, rust, terracotta, warm brown, dusty rose
+    baseHue = pick([25, 15, 340, 35, 200]);
+  } else if (timeN > 0.7) {
+    // contemporary: cool — cyan, violet, electric blue, magenta, slate
+    baseHue = pick([185, 265, 220, 310, 175]);
+  } else {
+    // mixed: explicitly avoid green family (75–150°) — it reads as "neutral nature"
+    // use: gold, teal, purple, red-orange, slate-blue
+    baseHue = pick([48, 195, 280, 18, 355]);
+  }
+
+  // Build complement — ensure different perceptual family
+  let compHue = (baseHue + 160 + Math.floor(Math.random()*30)) % 360;
+  if (!differentFamily(baseHue, compHue)) compHue = (compHue + 65) % 360;
+
+  // Accent: split from complement for triad feel, most saturated stop
+  let accentHue = (compHue + 35 + Math.floor(Math.random()*30)) % 360;
+  if (!differentFamily(accentHue, baseHue) && !differentFamily(accentHue, compHue)) {
+    accentHue = (baseHue + 240) % 360;
+  }
+
+  const satBase = 22 + moodN * 48;          // dark=low sat, optimistic=high
+  const lightDark = 12 + (1-moodN) * 12;    // 12–24, never pure black
+  const satVariance = compN < 0.5 ? 18 : 6; // chaotic = more variance between stops
+
   return [
-    hsl(baseHue, satBase * 0.3, lightnessLight),                          // light
-    hsl(baseHue, satBase * 0.5 + satVariance, lightnessLight - 18),       // midlight
-    hsl(accentHue, satBase + 15, 48 + moodNorm * 10),                    // accent
-    hsl(compHue, satBase * 0.6, lightnessDark + 18),                      // middark
-    hsl(compHue, satBase * 0.4, lightnessDark),                           // dark (not black)
+    hslToHex(baseHue,  satBase * 0.18,              90 + moodN * 4),        // light
+    hslToHex(baseHue,  satBase * 0.45 + satVariance, 70 - moodN * 8),       // mid-light
+    hslToHex(accentHue, satBase + 28,               46 + moodN * 10),       // accent — most saturated
+    hslToHex(compHue,  satBase * 0.52,              lightDark + 22),        // mid-dark
+    hslToHex(compHue,  satBase * 0.30,              lightDark),             // dark — not black
   ];
 }
 
